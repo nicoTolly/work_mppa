@@ -1,0 +1,1 @@
+{ kernel[i0] -> grid[o0, o1] : i0 = 0 and o0 = 256 and o1 = 256; kernel[i0] -> block[o0, o1, o2] : i0 = 0 and o0 = 32 and o1 = 4 and o2 = 4; kernel[i0] -> tile[o0, o1, o2] : i0 = 0 and o0 = 16 and o1 = 16 and o2 = 16 }

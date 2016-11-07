@@ -1,0 +1,18 @@
+{
+    "Path": ".",
+    "Prefix": "ldc_cpu_ppcg",
+    "Log": false,
+    "Export": false,
+    "Images": true,
+    "Lx": 128,
+    "Ly": 128,
+    "Lz": 128,
+    "Nx": 32,
+    "Ny": 1,
+    "Nz": 1,
+    "Duration": 1000,
+    "Period": 100,
+    "Re": 1E3,
+    "U0": 0.4,
+    "epsilon": 1E-5
+}
