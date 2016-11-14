@@ -1,0 +1,19 @@
+dir=$PWD filter="*h *.c *.cl" {
+ const.h
+ opal.h
+ types.h
+ app.c
+ config.c
+ data.c
+ export.c
+ frame.c
+ launch.c
+ main.c
+ print.c
+ results.c
+ utils.c
+ geometry.cl
+ global.cl
+ init.cl
+ compute.cl
+}
