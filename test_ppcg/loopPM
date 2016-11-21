@@ -1,3 +1,6 @@
+#include <assert.h>
+#include <stdio.h>
+#include "ocl_utilities.h"
 #include <stdio.h>
 #include <stdlib.h>
 #define N 256
@@ -20,23 +23,10 @@ int main()
   for(int i = 0; i < N*N ; i++)
     tab[i] = 1.2 + i * 3.5;
 
-#pragma scop
-  while(1)
+  /* ppcg generated CPU code */
+  
   {
-  for(int i = 0; i < N ; i++)
-    for(int j = 0; j < N ; j++)
-    {
-      if (j <= 1)
-	dst[i * N + j]=tab[i * N + j];
-      else if(j >= N - 2)
-	dst[i*N + j] = tab[i*N + j];
-      else
-	dst[i*N + j] = tab[i*N + j -2] -tab[i*N + j-1] + tab[i*N + j] -tab[i*N + j+1] + tab[i*N + j+2];
-    }
-
   }
-    
-#pragma endscop
   sum = 0;
   for(int i = 0; i < N * N ; i++)
     sum += dst[i];

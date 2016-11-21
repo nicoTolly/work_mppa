@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #define N 256
@@ -12,6 +13,8 @@ void foo( float src)
 
 }
 
+#define MAX(i, j) ((i) - (j) > 0 ? (i) : (j) )
+#define MIN(i, j) ((i) - (j) > 0 ? (j) : (i) )
 int main()
 {
   float tab[N*N];
@@ -21,20 +24,11 @@ int main()
     tab[i] = 1.2 + i * 3.5;
 
 #pragma scop
-  while(1)
-  {
   for(int i = 0; i < N ; i++)
-    for(int j = 0; j < N ; j++)
+    for(int j = MAX(0, - N + i); j < MIN( N, i) ; j++)
     {
-      if (j <= 1)
-	dst[i * N + j]=tab[i * N + j];
-      else if(j >= N - 2)
-	dst[i*N + j] = tab[i*N + j];
-      else
-	dst[i*N + j] = tab[i*N + j -2] -tab[i*N + j-1] + tab[i*N + j] -tab[i*N + j+1] + tab[i*N + j+2];
+      dst[i * N + ( i - j)] = tab[i * N + (i - j)] * tab[ i * N + (i - j) ];
     }
-
-  }
     
 #pragma endscop
   sum = 0;
