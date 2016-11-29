@@ -3,25 +3,32 @@
 #include "ocl_utilities.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define N (1 << 18)
+#define N 256
+void foo( float src)
+{
+  float sum=0;
+  for (int i = 0; i < 8192; i++)
+  {
+    sum += src * 12.3;
+    sum *= 2;
+  }
+
+}
+
 int main()
 {
-  float tab[N];
-  float dst[N];
+  float tab[N*N];
+  float dst[N*N];
   float sum;
-  for(int i = 0; i < N ; i++)
+  for(int i = 0; i < N*N ; i++)
     tab[i] = 1.2 + i * 3.5;
 
   /* ppcg generated CPU code */
   
   {
-    int i;
-    for (i = 0; i < (1 << 18); i += 1) {
-      dst[i] = (tab[i] * tab[i]);
-    }
   }
   sum = 0;
-  for(int i = 0; i < N ; i++)
+  for(int i = 0; i < N * N ; i++)
     sum += dst[i];
   printf("%f\n", sum);
   return 0;

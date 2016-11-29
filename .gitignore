@@ -2,3 +2,5 @@ opal/build/
 opal/test
 
 ppcg/
+
+test_ppcg/build/
