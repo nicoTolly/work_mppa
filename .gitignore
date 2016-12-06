@@ -4,3 +4,5 @@ opal/test
 ppcg/
 
 test_ppcg/build/
+
+loopTransform/build/
