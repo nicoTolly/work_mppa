@@ -1,0 +1,4 @@
+
+#change these variable to local settings
+LLVM_BUILD_DIR=/home/nico/stage/build
+LLVM_SRC_DIR=/home/nico/stage/llvm

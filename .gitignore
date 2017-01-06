@@ -6,3 +6,7 @@ ppcg/
 test_ppcg/build/
 
 loopTransform/build/
+
+loopTranform/Makefile.local
+
+isl_hello

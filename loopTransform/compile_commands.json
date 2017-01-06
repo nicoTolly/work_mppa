@@ -1,0 +1,13 @@
+[
+  {
+    "directory": "/home/nico/work/work_mppa/loopTransform",
+    "command": "g++ -std=c++11 foo.cpp",
+    "file": "/home/nico/work/work_mppa/loopTransform/foo.cpp" 
+  }
+  ,
+  {
+    "directory": "/home/nico/work/work_mppa/loopTransform",
+    "command": "g++ -std=c++11 -DDIV_ZERO foo.cpp",
+    "file": "/home/nico/work/work_mppa/loopTransform/foo.cpp" 
+  }
+]

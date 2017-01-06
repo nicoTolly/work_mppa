@@ -13,6 +13,9 @@
 #include "clang/Tooling/Tooling.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 
+//#include <clang/ASTMatchers/ASTMatchFinder.h>
+//#include <clang/ASTMatchers/ASTMatchers.h>
+
 using namespace std;
 using namespace clang;
 using namespace clang::tooling;
@@ -24,6 +27,7 @@ int main( int argc, const char **argv)
 {
   CommonOptionsParser op(argc, argv, toolCat);
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
-  return 0;
+  int result = Tool.run(newFrontendActionFactory <SyntaxOnlyAction>().get());
+  return result;
 }
 
