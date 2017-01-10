@@ -10,3 +10,10 @@ loopTransform/build/
 loopTranform/Makefile.local
 
 isl_hello
+
+ISL_transform/isl_hello
+ISL_transform/isl_hello_db
+
+ISL_transform/debug_obj/
+ISL_transform/release_obj/
+ISL_transform/.depend
