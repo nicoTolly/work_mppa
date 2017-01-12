@@ -17,3 +17,7 @@ ISL_transform/isl_hello_db
 ISL_transform/debug_obj/
 ISL_transform/release_obj/
 ISL_transform/.depend
+
+# A directory for test, debugs and things that should
+# not be pushed
+trash/

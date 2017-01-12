@@ -1,5 +1,5 @@
 CC=gcc
-DEBUG=
+DEBUG=yes
 
 ifeq ($(DEBUG),yes)
 	CXXFLAGS=-Wall -g 
@@ -11,7 +11,7 @@ endif
 
 
 
-SRC= isl_hello.c
+SRC= main.c schedule_visitor.c isl_utils.c
 LDFLAGS= -lisl -lpet
 
 
@@ -23,10 +23,12 @@ RELEASE_OBJECTS = $(addprefix $(PROJECT_ROOT_DIR)/release_obj/,$(SRC:.c=.o))
 
 
 .PHONY: all
+.PHONY: dir
+.PHONY: depend
 .PHONY: debug
 .PHONY: clean
 
-all: dir $(EXEC)
+all: dir depend $(EXEC)
 
 dir:
 	if ! test -d $(PROJECT_ROOT_DIR)/release_obj  ; then mkdir release_obj; fi
