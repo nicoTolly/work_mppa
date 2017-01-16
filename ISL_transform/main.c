@@ -21,8 +21,8 @@ int main(int argc, char** argv)
 
 
 
-  //TEST pet transform 
-  // extract scop
+  // check that user gave an argument and that this
+  // argument is indeed a valid file
   if (argv[1] == NULL || access(argv[1], F_OK))
   {
 	  printf( "You must pass a valid file name as argument\n");

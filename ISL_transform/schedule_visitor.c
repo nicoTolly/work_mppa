@@ -44,12 +44,66 @@ void print_type(isl_schedule_node * node)
 	}
 }
 
+
+
+//callback for map_descendant_bottom_up
+// Call node_band_tile each time a band_node 
+// is visited
+isl_schedule_node * node_tiler(isl_schedule_node * node, void * user)
+{
+	enum isl_schedule_node_type ntype = isl_schedule_node_get_type( node);
+	print_type(node);
+	arg_t * args = (arg_t *) user;
+	isl_schedule_node * new_node = NULL;
+	// value to be returned
+	isl_schedule_node * return_node = NULL;
+
+	switch(ntype){
+	case isl_schedule_node_band:
+		/*
+		if ( isl_schedule_node_has_children(node) == isl_bool_true)
+		{
+			printf("Parsing and tiling a band\n");
+			isl_multi_val *tile_sizes = NULL;
+			tile_sizes = isl_multi_val_add_val( tile_sizes, isl_val_int_from_si(args->ctx, 32 ));
+			new_node = isl_schedule_node_band_tile(node, tile_sizes);
+			printf("new tiled node\n");
+			wrap_isl_printer(args->ctx, &args->printer, (void * ) new_node, SCHEDULE_NODE);
+		}
+		*/
+		printf("Look at me, I'm a band node!!!\n");
+	default:
+	break;
+	}
+	if (new_node != NULL)
+	{
+		//node = new_node;
+		
+		if (isl_schedule_node_has_parent(new_node))
+				return_node = isl_schedule_node_parent(new_node);
+		else
+			return_node = new_node;
+		//return_node = isl_schedule_node_root(new_node);
+	}
+	else if(node != NULL)
+	{
+		
+		if (isl_schedule_node_has_parent(node))
+			return_node = isl_schedule_node_parent(node);
+		else
+			return_node = node;
+		//return_node = isl_schedule_node_root(node);
+	}
+	//return return_node;
+	return node;
+}
+
 // A function to be passed as callback to foreach_descendant
 // Simply print the node passed as parameter
 // user is a struct containing printer and ctx
 isl_bool print_node(__isl_keep isl_schedule_node *node, void* user)
 {
-	print_arg_t * args = (print_arg_t *) user;
+	arg_t * args = (arg_t *) user;
 	print_type(node);
 	wrap_isl_printer(args->ctx, &args->printer, (void * ) node, SCHEDULE_NODE);
 	return isl_bool_true;
@@ -59,19 +113,44 @@ isl_bool print_node(__isl_keep isl_schedule_node *node, void* user)
 int schedule_visitor( isl_ctx * ctx, __isl_keep isl_printer *printer, __isl_keep isl_schedule * schedule, void * (*fn) (void *))
 {
 	isl_schedule_node * root = isl_schedule_get_root(schedule);
-	schedule_tree_visitor(ctx, printer, root);
-	print_arg_t args = {ctx, printer};
-	//isl_schedule_node_foreach_descendant_top_down(root, print_node,  (void * )&args );
+	wrap_isl_printer(ctx, &printer, (void * ) root, SCHEDULE_NODE);
+	//isl_schedule_node * new_root = schedule_tree_visitor(ctx, printer, root);
+	//if (new_root == NULL)
+	//{
+	//	printf("schedule tree visitor failed \n");
+	//	return -1;
+	//}
+	//wrap_isl_printer(ctx, &printer, (void * ) new_root, SCHEDULE_NODE);
+	arg_t args = {ctx, printer};
+	//isl_schedule_node_foreach_descendant_top_down(root, node_tiler,  (void * )&args );
+	isl_schedule_node *new_root = isl_schedule_node_map_descendant_bottom_up(root, node_tiler,  (void * )&args );
+	if (new_root == NULL)
+	{
+		printf("schedule tree visitor failed \n");
+		return -1;
+	}
+	printf("\n\nNew schedule \n\n");
+	wrap_isl_printer(ctx, &printer, (void * ) new_root, SCHEDULE_NODE);
 	//isl_schedule_foreach_schedule_node_top_down(schedule, print_node,  (void * )&args );
-	isl_schedule_node_free(root);
+	isl_schedule_node_free(new_root);
 	return 0;
 }
 
-void schedule_tree_visitor(isl_ctx *ctx, isl_printer * printer, isl_schedule_node * node  )
+
+// Take a node as argument and visit
+// each descendant manually (probably a bad idea,
+// better use some pre-defined functions)
+// This function segfaults at this point, do not use it
+__isl_give isl_schedule_node* schedule_tree_visitor(isl_ctx *ctx, isl_printer * printer, __isl_take isl_schedule_node * node  )
 {
 	enum isl_schedule_node_type ntype = isl_schedule_node_get_type( node);
-	wrap_isl_printer(ctx, &printer, (void * ) node, SCHEDULE_NODE);
-	print_type( node);
+	print_type(node);
+	if (node == NULL)
+	{
+		printf("Node is NULL\n");
+		return NULL;
+	}
+	isl_schedule_node * return_node  = NULL;
 	switch(ntype)
 	{
 case isl_schedule_node_filter :
@@ -84,27 +163,37 @@ case isl_schedule_node_filter :
 		//node = pnode;
 		isl_id *mark = isl_id_alloc(ctx, "A mark", NULL);
 		isl_schedule_node * new_node = isl_schedule_node_insert_mark( cnode, mark);
-		wrap_isl_printer(ctx, &printer, (void * ) new_node, SCHEDULE_NODE);
-		schedule_tree_visitor(ctx, printer, new_node);
+		//wrap_isl_printer(ctx, &printer, (void * ) new_node, SCHEDULE_NODE);
+		return_node =  schedule_tree_visitor(ctx, printer, new_node);
 
 	}
 	break;
 case isl_schedule_node_band :
+	if ( isl_schedule_node_has_children(node) == isl_bool_true)
+	{
+		printf("node has children\n");
+		isl_multi_val *tile_sizes = NULL;
+		tile_sizes = isl_multi_val_add_val( tile_sizes, isl_val_int_from_si(ctx, 32 ));
+		isl_schedule_node * new_node = isl_schedule_node_band_tile(node, tile_sizes);
+		return_node =  schedule_tree_visitor(ctx, printer, new_node);
+
+	}
 case isl_schedule_node_context :
 case isl_schedule_node_domain :
-case isl_schedule_node_leaf :
-	if ( isl_schedule_node_has_children(node))
+	if ( isl_schedule_node_has_children(node) == isl_bool_true)
 	{
 		printf("node has children\n");
 		//isl_schedule_node * pnode = isl_schedule_node_copy(node);
 		//isl_schedule_node * cnode = isl_schedule_node_first_child(node);
 		isl_schedule_node * cnode = isl_schedule_node_get_child(node, 0);
-		wrap_isl_printer(ctx, &printer, (void * ) cnode, SCHEDULE_NODE);
+		//wrap_isl_printer(ctx, &printer, (void * ) cnode, SCHEDULE_NODE);
 		//node = pnode;
-		schedule_tree_visitor(ctx, printer, cnode);
+		return_node = (cnode != NULL)? schedule_tree_visitor(ctx, printer, cnode):NULL;
 
 	}
 	break;
+case isl_schedule_node_leaf :
+	return_node = node;
 case isl_schedule_node_sequence : 
 	// apparently, you just can't declare a variable after a label
 	;
@@ -118,13 +207,18 @@ case isl_schedule_node_sequence :
 		isl_schedule_node * pnode = isl_schedule_node_copy(node);
 		//warning : This frees the node pointer !!!!
 		children[i] = isl_schedule_node_child(node, i);
-		schedule_tree_visitor(ctx, printer, children[i]);
+		children[i] = schedule_tree_visitor(ctx, printer, children[i]);
 		printf("print node in child\n");
-		wrap_isl_printer(ctx, &printer, (void * ) children[i], SCHEDULE_NODE);
+		//wrap_isl_printer(ctx, &printer, (void * ) children[i], SCHEDULE_NODE);
 		node = pnode;
 	}
+	return_node = node;
 	break;
 default :
 	break;
 	}
+	if (return_node == NULL)
+		return NULL;
+	else
+		return return_node;
 }

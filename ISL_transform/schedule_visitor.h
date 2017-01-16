@@ -13,11 +13,13 @@ typedef struct
 {
 	isl_ctx * ctx;
 	isl_printer * printer;
-}print_arg_t;
+}arg_t;
 
 // entry point for visiting a tree
 // the callback function can perform
 // certain transformations on schedule
 int schedule_visitor( isl_ctx * ctx, __isl_keep isl_printer *printer, isl_schedule * schedule, void * (*fn) (void *));
-void schedule_tree_visitor(isl_ctx *ctx, isl_printer * printer, isl_schedule_node * node  );
+isl_schedule_node * schedule_tree_visitor(isl_ctx *ctx, isl_printer * printer, isl_schedule_node * node  );
+// function used as callback for map_descendant_bottom_up
+isl_schedule_node * node_tiler(isl_schedule_node * node, void * user);
 #endif //__SCHEDULE_VISITOR_H__
