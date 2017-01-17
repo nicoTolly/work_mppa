@@ -1,5 +1,33 @@
 #include "schedule_visitor.h"
 
+/* Tile "band" with tile size specified by "sizes".
+ *
+ * Since the tile loops will be mapped to block ids, we forcibly
+ * turn off tile loop scaling.  We may want to enable tile loop scaling
+ * at some later point, but then we would have to support the detection
+ * of strides during the mapping to block ids.
+ * Similarly, since the point loops will be mapped to thread ids,
+ * we forcibly shift the point loops so that they start at zero.
+ */
+static __isl_give isl_schedule_node *tile_band(
+	__isl_take isl_schedule_node *node, __isl_take isl_multi_val *sizes)
+{
+	isl_ctx *ctx = isl_schedule_node_get_ctx(node);
+	int scale_tile;
+	int shift_point;
+
+	scale_tile = isl_options_get_tile_scale_tile_loops(ctx);
+	isl_options_set_tile_scale_tile_loops(ctx, 0);
+	shift_point = isl_options_get_tile_shift_point_loops(ctx);
+	isl_options_set_tile_shift_point_loops(ctx, 1);
+
+	node = isl_schedule_node_band_tile(node, sizes);
+
+	isl_options_set_tile_scale_tile_loops(ctx, scale_tile);
+	isl_options_set_tile_shift_point_loops(ctx, shift_point);
+
+	return node;
+}
 // given a node, print its type
 void print_type(isl_schedule_node * node)
 {
@@ -70,8 +98,10 @@ isl_schedule_node * node_tiler(isl_schedule_node * node, void * user)
 			tile_sizes = isl_multi_val_add_val( tile_sizes, isl_val_int_from_si(args->ctx, 32 ));
 			isl_schedule_node * pnode = isl_schedule_node_copy(node);
 
-			// This tile immediately segfaults...
-			tiled_node = isl_schedule_node_band_tile(node, tile_sizes);
+			// Impossible to see the result of this tile
+			//tiled_node = isl_schedule_node_band_tile(node, tile_sizes);
+			//tiled_node = isl_schedule_node_band_split(node, 1);
+			tiled_node = tile_band(node, tile_sizes);
 			printf("Printing new tiled node\n");
 			wrap_isl_printer(ctx, (void * ) tiled_node, SCHEDULE_NODE);
 			isl_printer *isprint = isl_printer_to_file(args->ctx, stdout);
