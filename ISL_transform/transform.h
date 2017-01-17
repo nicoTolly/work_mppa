@@ -8,6 +8,7 @@
 #include <isl/ast.h>
 #include <isl/space.h>
 #include <isl/union_set.h>
+#include <isl/ast_build.h>
 
 
 #include <pet.h>

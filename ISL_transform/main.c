@@ -4,7 +4,7 @@
  * from inputs
  */
 
-
+#include "globals.h"
 #include "isl_utils.h"
 #include "transform.h"
 #include "schedule_visitor.h"
@@ -15,8 +15,9 @@
 
 int main(int argc, char** argv)
 {
-  isl_ctx * ctx = isl_ctx_alloc_with_pet_options();
-  isl_printer *printer = isl_printer_to_file(ctx, stdout);
+  ctx = isl_ctx_alloc_with_pet_options();
+  printer = isl_printer_to_file(ctx, stdout);
+  //isl_printer *printer = isl_printer_to_file(ctx, stdout);
 
 
 
@@ -34,8 +35,9 @@ int main(int argc, char** argv)
 
   isl_schedule * filesched = pet_scop_get_schedule(scop);
   //printf("printing schedule from file\n");
-  //wrap_isl_printer(ctx, &printer, (void *) filesched, SCHEDULE);
-  schedule_visitor(ctx, printer, filesched, NULL);
+  //wrap_isl_printer(ctx, (void *) filesched, SCHEDULE);
+  schedule_visitor(ctx, filesched, NULL);
+
   isl_schedule_free(filesched);
 
   printf("scop starts at offset %d\n", pet_loc_get_start(scop->loc));
