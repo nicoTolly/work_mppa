@@ -18,6 +18,8 @@ ISL_transform/debug_obj/
 ISL_transform/release_obj/
 ISL_transform/.depend
 
+*.swp
+
 # A directory for test, debugs and things that should
 # not be pushed
 trash/

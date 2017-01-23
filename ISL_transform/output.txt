@@ -1,9 +1,0 @@
-[p0, p1, p2] -> {  : 1 = 0 }
-Printing basic set
-{ [i, j] : j = 12 - i and 3 <= i <= 9 }
-Printing union set
-{ [i, j = 12 - i] : 3 <= i <= 9 }
-printing schedule
-{ domain: "{ [sÿ¸, i1] }" }
-printing schedule from file
-{ domain: "{ S_0[i, j] : 0 <= i <= 99 and 0 <= j <= 99; S_1[i, j] : 0 <= i <= 99 and 0 <= j <= 99 }", child: { schedule: "L_0[{ S_0[i, j] -> [(i)]; S_1[i, j] -> [(i)] }]", child: { schedule: "L_1[{ S_0[i, j] -> [(j)]; S_1[i, j] -> [(j)] }]", child: { sequence: [ { filter: "{ S_0[i, j] }" }, { filter: "{ S_1[i, j] }" } ] } } } }

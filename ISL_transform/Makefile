@@ -2,7 +2,9 @@ CC=gcc
 DEBUG=yes
 
 
-CFLAGS=-Wall -foptimize-sibling-calls
+# -foptimize-sibling-calls may cause bugs (or not) 
+#  To be tested
+CFLAGS=-Wall 
 ifeq ($(DEBUG),yes)
 	CFLAGS+= -g 
 	EXEC= isl_hello.db
@@ -13,8 +15,8 @@ endif
 
 
 
-SRC= main.c schedule_visitor.c isl_utils.c
-LDFLAGS= -lisl -lpet
+SRC= main.c schedule_visitor.c isl_utils.c node_count.c
+LDFLAGS= -lisl -lpet -lpthread
 
 
 PROJECT_ROOT_DIR= $(shell pwd)

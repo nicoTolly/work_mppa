@@ -31,3 +31,47 @@ void wrap_isl_printer(isl_ctx * ctx,  void * var_to_print, isl_enum_type typ)
 	}
 	printf("\n");
 }
+
+// given a node, print its type
+void print_type(isl_schedule_node * node)
+{
+	enum isl_schedule_node_type ntype = isl_schedule_node_get_type( node);
+
+	switch(ntype){
+	case isl_schedule_node_band:
+		printf("band type\n");
+		break;
+	case isl_schedule_node_context:
+		printf("context type\n");
+		break;
+	case isl_schedule_node_domain:
+		printf("domain type\n");
+		break;
+	case isl_schedule_node_expansion:
+		printf("expansion type\n");
+		break;
+	case isl_schedule_node_extension:
+		printf("extension type\n");
+		break;
+	case isl_schedule_node_filter:
+		printf("filter type\n");
+		break;
+	case isl_schedule_node_leaf:
+		printf("leaf type\n");
+		break;
+	case isl_schedule_node_guard:
+		printf("guard type\n");
+		break;
+	case isl_schedule_node_mark:
+		printf("mark type\n");
+		break;
+	case isl_schedule_node_sequence:
+		printf("sequence type\n");
+		break;
+	case isl_schedule_node_set:
+		printf("set type\n");
+		break;
+	default:
+	break;
+	}
+}

@@ -8,4 +8,6 @@ typedef enum { VAL, BASIC_SET, SET, UNION_SET, SCHEDULE , SCHEDULE_NODE} isl_enu
 
 void wrap_isl_printer(isl_ctx * ctx, void * var_to_print, isl_enum_type typ);
 
+
+void print_type(isl_schedule_node * node);
 #endif //__ISL__TRANSFORM__

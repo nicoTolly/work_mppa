@@ -17,4 +17,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <pthread.h>
+
 #endif //__ISL__TRANSFORM__

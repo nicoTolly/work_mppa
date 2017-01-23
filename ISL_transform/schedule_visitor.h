@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "transform.h"
 #include "isl_utils.h"
+#include "node_count.h"
 
 #include <isl/schedule.h>
 #include <isl/schedule_node.h>
@@ -18,7 +19,7 @@ typedef struct
 // entry point for visiting a tree
 // the callback function can perform
 // certain transformations on schedule
-int schedule_visitor( isl_ctx * ctx,  isl_schedule * schedule, void * (*fn) (void *));
+int schedule_visitor(   isl_schedule * schedule, void * (*fn) (void *));
 isl_schedule_node * schedule_tree_visitor(isl_ctx *ctx, isl_schedule_node * node  );
 // function used as callback for map_descendant_bottom_up
 isl_schedule_node * node_tiler(isl_schedule_node * node, void * user);
