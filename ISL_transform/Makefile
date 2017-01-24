@@ -15,7 +15,10 @@ endif
 
 
 
-SRC= main.c schedule_visitor.c isl_utils.c node_count.c
+SRC= main.c schedule_visitor.c isl_utils.c node_count.c band_fuse.c
+# We could have used the line below but we have some 
+# C files we do not wish to compile (simple.c, buggish_main.c ...)
+#SRC= *.c
 LDFLAGS= -lisl -lpet -lpthread
 
 

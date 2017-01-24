@@ -31,56 +31,14 @@ static __isl_give isl_schedule_node *tile_band(
 }
 
 
-__isl_give isl_schedule_node * band_fuse(__isl_take isl_schedule_node * node)
-{
-	if (isl_schedule_node_get_type( node) != isl_schedule_node_band)
-	{
-		printf("error, not a band node\n");
-		exit(-1);
-	}
-	isl_schedule_node * parent = isl_schedule_node_parent(node);
-	//verify if the child is a band node
-	if (isl_schedule_node_get_type( parent) != isl_schedule_node_band)
-	{
-		return node;
-	}
-	isl_space * space = isl_schedule_node_band_get_space(node);
-
-	// get partial schedules and fuse them
-	isl_multi_union_pw_aff * mu = isl_schedule_node_band_get_partial_schedule(node);
-	isl_multi_union_pw_aff * pmu = isl_schedule_node_band_get_partial_schedule(parent);
-
-	//isl_union_pw_aff_list * mupw_list = isl_union_pw_aff_list_from_union_pw_aff(
-	//		mu);
-	//mupw_list = isl_multi_union_pw_aff_list_add(mupw_list, pmu);
-	//isl_multi_union_pw_aff * mupw_result = isl_multi_union_pw_aff_from_union_pw_aff_list(space, mupw_list);
-
-
-	//isl_schedule_node * new_node = isl_schedule_insert_partial_schedule(parent, mupw_result);
-
-	//isl_schedule_node * child = isl_schedule_node_delete(node);
-	return node;
-
-
-}
-
-
-isl_schedule_node * schedule_node_fuse_bands(isl_schedule_node * node, void * user)
-{
-	enum isl_schedule_node_type ntype = isl_schedule_node_get_type( node);
-	switch(ntype){
-	case isl_schedule_node_band:
-		return band_fuse(node);
-	default:
-		return node;
-	}
-}
-
 
 //callback for map_descendant_bottom_up
 // Call node_band_tile each time a band_node 
 // is visited
-isl_schedule_node * node_tiler(isl_schedule_node * node, void * user)
+// Returns a node at the same position in the tree
+// as the node taken as input.
+// That way, the number of reference is still the same
+isl_schedule_node * node_tiler(__isl_take isl_schedule_node * node, void * user)
 {
 	enum isl_schedule_node_type ntype = isl_schedule_node_get_type( node);
 	print_type(node);
@@ -102,8 +60,6 @@ isl_schedule_node * node_tiler(isl_schedule_node * node, void * user)
 			tile_sizes = isl_multi_val_add_val(tile_sizes, val);
 
 
-			//tiled_node = isl_schedule_node_band_tile(node, tile_sizes);
-			//tiled_node = isl_schedule_node_band_split(node, 1);
 			tiled_node = tile_band(node, tile_sizes);
 			return_node = tiled_node;
 			
@@ -115,7 +71,6 @@ isl_schedule_node * node_tiler(isl_schedule_node * node, void * user)
 	}
 	return return_node;
 }
-
 
 
 
@@ -139,13 +94,9 @@ case isl_schedule_node_filter :
 	if ( isl_schedule_node_has_children(node))
 	{
 		printf("node has children\n");
-		//isl_schedule_node * pnode = isl_schedule_node_copy(node);
-		//isl_schedule_node * cnode = isl_schedule_node_first_child(node);
 		isl_schedule_node * cnode = isl_schedule_node_get_child(node, 0);
-		//node = pnode;
 		isl_id *mark = isl_id_alloc(ctx, "A mark", NULL);
 		isl_schedule_node * new_node = isl_schedule_node_insert_mark( cnode, mark);
-		//wrap_isl_printer(ctx, (void * ) new_node, SCHEDULE_NODE);
 		return_node =  schedule_tree_visitor(ctx, new_node);
 
 	}
@@ -165,11 +116,7 @@ case isl_schedule_node_domain :
 	if ( isl_schedule_node_has_children(node) == isl_bool_true)
 	{
 		printf("node has children\n");
-		//isl_schedule_node * pnode = isl_schedule_node_copy(node);
-		//isl_schedule_node * cnode = isl_schedule_node_first_child(node);
 		isl_schedule_node * cnode = isl_schedule_node_get_child(node, 0);
-		//wrap_isl_printer(ctx, (void * ) cnode, SCHEDULE_NODE);
-		//node = pnode;
 		return_node = (cnode != NULL)? schedule_tree_visitor(ctx,  cnode):NULL;
 
 	}
@@ -191,7 +138,6 @@ case isl_schedule_node_sequence :
 		children[i] = isl_schedule_node_child(node, i);
 		children[i] = schedule_tree_visitor(ctx,  children[i]);
 		printf("print node in child\n");
-		//wrap_isl_printer(ctx, (void * ) children[i], SCHEDULE_NODE);
 		node = pnode;
 	}
 	return_node = node;
@@ -208,6 +154,7 @@ default :
 
 
 //A function for visiting a schedule tree, maybe modifying it
+// invoked in main
 int schedule_visitor( __isl_keep isl_schedule * schedule, void * (*fn) (void *))
 {
 	isl_schedule_node * root = isl_schedule_get_root(schedule);
@@ -215,17 +162,11 @@ int schedule_visitor( __isl_keep isl_schedule * schedule, void * (*fn) (void *))
 	wrap_isl_printer(ctx,  (void * ) root, SCHEDULE_NODE);
 	int nband = count_band_nodes(root);
 	printf("number of band in original schedule :%d\n", nband);
-	//isl_schedule_node_free(root);
-	//isl_schedule_node * new_root = schedule_tree_visitor(ctx,root);
-	//if (new_root == NULL)
-	//{
-	//	printf("schedule tree visitor failed \n");
-	//	return -1;
-	//}
-	//wrap_isl_printer(ctx, (void * ) new_root, SCHEDULE_NODE);
 	//isl_schedule_node_foreach_descendant_top_down is NOT supposed to change the state of the schedule node
 	//It is better to use map_descendant_bottom_up which seems better suited
 	//for that
+#if 1
+	// Calling map_descendant bottom up for tiling the code
 	isl_schedule_node *new_root = isl_schedule_node_map_descendant_bottom_up(root, node_tiler,  NULL );
 	if (new_root == NULL)
 	{
@@ -235,8 +176,22 @@ int schedule_visitor( __isl_keep isl_schedule * schedule, void * (*fn) (void *))
 	printf("\n\nNew schedule \n\n");
 	wrap_isl_printer(ctx, (void * ) new_root, SCHEDULE_NODE);
 	//
-	////printf("number of band in new schedule  :");
 	printf("new number of band nodes : %d\n", count_band_nodes(new_root));
+	for (int i = 0; i < 25; i++)
+		printf("new number of band nodes : %d\n", count_band_nodes(root));
 	isl_schedule_node_free(new_root);
+	// These free function are safe,
+	// that is to say that there is no double 
+	// free risk. Therefore, we can free root
+	// even if it is supposed to be done in
+	// map_descendant_bottom_up
+	// However, this is not recommanded by
+	// the official manual. It seems that this
+	// reference still counts
+	//isl_schedule_node_free(root);
+#else
+	isl_schedule_node_free(root);
+#endif
+
 	return 0;
 }
