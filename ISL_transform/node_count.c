@@ -6,7 +6,7 @@
 void* count_callback(void * arg)
 {
 	count_arg_t * args = (count_arg_t *) arg;
-	count_band_node_rec(args->node, args->nb_band, args->mut);
+	count_band_node_rec(args->node, args->nb_band, args->lock);
 	return NULL;
 }
 
@@ -76,23 +76,26 @@ void count_band_node_rec( __isl_keep isl_schedule_node * node, int * nb_band, pt
 				}
 #ifdef __MULTITHREADS__
 				pthread_t * tthread = malloc(sizeof(pthread_t) * nb_children);
-				count_arg_t *args = (count_arg_t *) malloc(sizeof(intptr_t) * nb_children);
+				count_arg_t *args = (count_arg_t *) malloc(sizeof(count_arg_t) * nb_children);
 				if (args == NULL)
 				{
 					printf("got a NULL args\n");
 					exit(-1);
 				}
+
+
 #endif
+				isl_schedule_node ** cnodes = (isl_schedule_node **) malloc(sizeof(isl_schedule_node *) * nb_children);
 				for (int i= 0; i < nb_children; i++)
 				{
-					isl_schedule_node * cnode = isl_schedule_node_get_child(node, i);
 #ifdef __MULTITHREADS__
-					args[i] = (count_arg_t) { cnode, nb_band, lock };
+					cnodes[i] = isl_schedule_node_get_child(node, i);
+					args[i] = (count_arg_t) { cnodes[i], nb_band, lock };
 					tthread[i] = pthread_create(&tthread[i], NULL, count_callback, (void*) &args[i]);	
 #else
-
-					count_band_node_rec(cnode, nb_band, lock);
-					isl_schedule_node_free(cnode);
+					cnodes[i] = isl_schedule_node_get_child(node, i);
+					count_band_node_rec(cnodes[i], nb_band, lock);
+					//isl_schedule_node_free(cnodes[i]);
 #endif
 				}
 // Multithread version is to be completed
@@ -104,6 +107,9 @@ void count_band_node_rec( __isl_keep isl_schedule_node * node, int * nb_band, pt
 					pthread_join(tthread[i], NULL);
 				}
 #endif
+				for (int i= 0; i < nb_children; i++)
+					isl_schedule_node_free(cnodes[i]);
+				free(cnodes);
 					
 					
 		}

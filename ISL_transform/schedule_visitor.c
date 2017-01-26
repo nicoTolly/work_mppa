@@ -177,8 +177,6 @@ int schedule_visitor( __isl_keep isl_schedule * schedule, void * (*fn) (void *))
 	wrap_isl_printer(ctx, (void * ) new_root, SCHEDULE_NODE);
 	//
 	printf("new number of band nodes : %d\n", count_band_nodes(new_root));
-	for (int i = 0; i < 25; i++)
-		printf("new number of band nodes : %d\n", count_band_nodes(root));
 	isl_schedule_node_free(new_root);
 	// These free function are safe,
 	// that is to say that there is no double 

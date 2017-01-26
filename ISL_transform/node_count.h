@@ -5,12 +5,13 @@
 #include <pthread.h>
 #include "transform.h"
 
+#undef __MULTITHREADS__
 
 typedef struct count_arg 
 {
 	isl_schedule_node * node;
 	int * nb_band;
-	pthread_mutex_t * mut;
+	pthread_mutex_t * lock;
 } count_arg_t;
 
 

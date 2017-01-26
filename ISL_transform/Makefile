@@ -75,5 +75,5 @@ clean:
 	rm -fr $(PROJECT_ROOT_DIR)/debug_obj/*.o
 
 mrproper: clean
-	rm -fr isl_hello isl_hello
+	rm -fr isl_hello.db isl_hello
 
