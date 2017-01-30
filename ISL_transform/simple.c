@@ -1,25 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
 #define N 100
 int a[200][200] = {0};
 int t[200][200] ;
 int b[200][200];
-int main()
+
+int foo(char* str)
 {
+	return atoi(str) + 1;
+}
+
+
+int main(int argc, char ** argv)
+{
+	int nb = foo(argv[1]);
 #pragma scop
-  for (int i =0; i < N; i++)
-  {
-	  /*
-    for (int j =0; j < N; j++)
-      b[i][j] = t[i][N - j - 1];
-      */
-    for (int j =0; j < N; j++)
-    {
-      t	[i][j] = a[i][j];
-      t	[i][j] += 2;
-    }
-  }
+	for (int i =0; i < N; i++)
+	{
+		/*
+		   for (int j =0; j < N; j++)
+		   b[i][j] = t[i][N - j - 1];
+		   */
+		for (int j =0; j < N; j++)
+		{
+			t[i][j ] = a[i][j];
+			t[i][j] = t[i][j] | 2;
+		}
+	}
+	for (int i =0; i < N; i++)
+		for (int j =0; j < N; j++)
+			for (int k =0; k < N; k++)
+				b[i][j] = t[i][N - j - 1];
 #pragma endscop
-  for (int i =0; i < N; i++)
-    for (int j =0; j < N; j++)
-      b[i][j] = t[i][N - j - 1];
-  int v;
+	int v;
 } 

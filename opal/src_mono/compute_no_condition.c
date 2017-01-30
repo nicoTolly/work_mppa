@@ -137,40 +137,6 @@ void compute(
 		for(unsigned int y = 0; y < Config->Ly; y++){
 			for(unsigned int x = 0; x < Config->Lx; x++){
 
-//#ifdef  __BORDER_CHECK__ // don't care right now for border check
-//#if 0
-				// Get local geometry
-				int g = getGeometry(Config, x, y, z);
-
-				// Fetch source density distribution
-				f[ 0] = Src[z][y][x][0]; // src(0, 0);
-				if (g & G_BND) {
-					// Simple bounce-back boundary condition
-					if (g & G_E02) f[ 1] = Src[z][y][x][ 2]; /* src( 2, 0);*/ else f[ 1] = Src[z  ][y  ][x-1][ 1]; /*src( 1, -e01);*/
-					if (g & G_E01) f[ 2] = Src[z][y][x][ 1]; /* src( 1, 0);*/ else f[ 2] = Src[z  ][y  ][x+1][ 2]; /*src( 2, -e02);*/
-					if (g & G_E04) f[ 3] = Src[z][y][x][ 4]; /* src( 4, 0);*/ else f[ 3] = Src[z  ][y-1][x  ][ 3]; /*src( 3, -e03);*/
-					if (g & G_E03) f[ 4] = Src[z][y][x][ 3]; /* src( 3, 0);*/ else f[ 4] = Src[z  ][y+1][x  ][ 4]; /*src( 4, -e04);*/
-					if (g & G_E06) f[ 5] = Src[z][y][x][ 6]; /* src( 6, 0);*/ else f[ 5] = Src[z-1][y  ][x  ][ 5]; /*src( 5, -e05);*/
-					if (g & G_E05) f[ 6] = Src[z][y][x][ 5]; /* src( 5, 0);*/ else f[ 6] = Src[z+1][y  ][x  ][ 6]; /*src( 6, -e06);*/
-					if (g & G_E10) f[ 7] = Src[z][y][x][10]; /* src(10, 0);*/ else f[ 7] = Src[z  ][y-1][x-1][ 7]; /*src( 7, -e07);*/
-					if (g & G_E09) f[ 8] = Src[z][y][x][ 9]; /* src( 9, 0);*/ else f[ 8] = Src[z  ][y-1][x+1][ 8]; /*src( 8, -e08);*/
-					if (g & G_E08) f[ 9] = Src[z][y][x][ 8]; /* src( 8, 0);*/ else f[ 9] = Src[z  ][y+1][x-1][ 9]; /*src( 9, -e09);*/
-					if (g & G_E07) f[10] = Src[z][y][x][ 7]; /* src( 7, 0);*/ else f[10] = Src[z  ][y+1][x+1][10]; /*src(10, -e10);*/
-					if (g & G_E14) f[11] = Src[z][y][x][14]; /* src(14, 0);*/ else f[11] = Src[z-1][y  ][x-1][11]; /*src(11, -e11);*/
-					if (g & G_E13) f[12] = Src[z][y][x][13]; /* src(13, 0);*/ else f[12] = Src[z-1][y  ][x+1][12]; /*src(12, -e12);*/
-					if (g & G_E12) f[13] = Src[z][y][x][12]; /* src(12, 0);*/ else f[13] = Src[z+1][y  ][x-1][13]; /*src(13, -e13);*/
-					if (g & G_E11) f[14] = Src[z][y][x][11]; /* src(11, 0);*/ else f[14] = Src[z+1][y  ][x+1][14]; /*src(14, -e14);*/
-					if (g & G_E18) f[15] = Src[z][y][x][18]; /* src(18, 0);*/ else f[15] = Src[z-1][y-1][x  ][15]; /*src(15, -e15);*/
-					if (g & G_E17) f[16] = Src[z][y][x][17]; /* src(17, 0);*/ else f[16] = Src[z-1][y+1][x  ][16]; /*src(16, -e16);*/
-					if (g & G_E16) f[17] = Src[z][y][x][16]; /* src(16, 0);*/ else f[17] = Src[z+1][y-1][x  ][17]; /*src(17, -e17);*/
-					if (g & G_E15) f[18] = Src[z][y][x][15]; /* src(15, 0);*/ else f[18] = Src[z+1][y+1][x  ][18]; /*src(18, -e18);*/
-
-					// Imposed lid velocity
-					if (z == Config->Lx-1) {
-						f[13] += k0;
-						f[14] -= k0;
-					}
-				} else {
 //#else
 					// Pull propagation
 					f[ 1] = Src[z  ][y  ][x-1][ 1]; /*src( 1, -e01);*/
@@ -191,10 +157,6 @@ void compute(
 					f[16] = Src[z-1][y+1][x  ][16]; /*src(16, -e16);*/
 					f[17] = Src[z+1][y-1][x  ][17]; /*src(17, -e17);*/
 					f[18] = Src[z+1][y+1][x  ][18]; /*src(18, -e18);*/
-//#endif
-//#ifdef __BORDER_CHECK__ 
-				}
-//#endif
 
 				// Computation of moments
 				t0 = f[ 1] + f[ 2] + f[ 3] + f[ 4] + f[ 5] + f[ 6];

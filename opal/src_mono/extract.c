@@ -1,13 +1,23 @@
+
 /*
  * Transformations inspired by ppcg
  * Using pet for extract polyhedral scope
  * from inputs
  */
 
-#include "globals.h"
-#include "isl_utils.h"
-#include "transform.h"
-#include "schedule_visitor.h"
+//#include "globals.h"
+//#include "isl_utils.h"
+//#include "transform.h"
+//#include "schedule_visitor.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
+
+#include <isl/printer.h>
+#include <isl/ctx.h>
+#include <pet.h>
 
 
 
@@ -15,8 +25,8 @@
 
 int main(int argc, char** argv)
 {
-	ctx = isl_ctx_alloc_with_pet_options();
-	printer = isl_printer_to_file(ctx, stdout);
+	isl_ctx * ctx = isl_ctx_alloc_with_pet_options();
+	isl_printer *printer = isl_printer_to_file(ctx, stdout);
 	//isl_printer *printer = isl_printer_to_file(ctx, stdout);
 
 
@@ -44,7 +54,7 @@ int main(int argc, char** argv)
 		printf("This scop does contain data dependances\n");
 	else
 		printf("This scop does not contain data dependances\n");
-	schedule_visitor( filesched, NULL);
+	//schedule_visitor( filesched, NULL);
 
 
 	isl_schedule_free(filesched);

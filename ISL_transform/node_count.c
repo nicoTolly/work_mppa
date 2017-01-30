@@ -99,8 +99,9 @@ void count_band_node_rec( __isl_keep isl_schedule_node * node, int * nb_band, pt
 #endif
 				}
 // Multithread version is to be completed
-// To be found : a safe and convenient way 
-// to get a isl_schedule_node array or list
+// This causes a lot of segfaults
+// Strangely, it does more or less
+// work in gdb
 #ifdef __MULTITHREADS__
 				for (int i= 0; i < nb_children; i++)
 				{
