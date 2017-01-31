@@ -5,6 +5,7 @@
 #include "transform.h"
 #include "isl_utils.h"
 #include "node_count.h"
+#include "band_fuse.h"
 
 #include <isl/schedule.h>
 #include <isl/schedule_node.h>

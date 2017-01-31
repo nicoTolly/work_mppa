@@ -10,6 +10,10 @@ int foo(char* str)
 	return atoi(str) + 1;
 }
 
+void bar(int * e)
+{
+*e += 2;
+}
 
 int main(int argc, char ** argv)
 {
@@ -27,7 +31,10 @@ int main(int argc, char ** argv)
 #pragma scop
 	for (int i =0; i < N; i++)
 		for (int j =0; j < N; j++)
+{
 			b[i][j] = t[i][N - j - 1];
+bar(&i);
+}
 #pragma endscop
 	int v;
 } 
