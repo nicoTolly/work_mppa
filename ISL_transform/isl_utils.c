@@ -25,6 +25,9 @@ void wrap_isl_printer(isl_ctx * ctx,  void * var_to_print, isl_enum_type typ)
 		case SCHEDULE_NODE:
 			printer = isl_printer_print_schedule_node(printer, (isl_schedule_node *) var_to_print );
 			break;
+		case MULTI_UNION_PW_AFF:
+			printer = isl_printer_print_multi_union_pw_aff(printer, (isl_multi_union_pw_aff *) var_to_print );
+			break;
 		default:
 			printf("problem : not a valid type");
 			break;

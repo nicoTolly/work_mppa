@@ -17,34 +17,25 @@ __isl_give isl_schedule_node * band_fuse(__isl_take isl_schedule_node * node)
 	{
 		return node;
 	}
+	isl_ctx * ctx = isl_schedule_node_get_ctx(node);
 	isl_space * space = isl_schedule_node_band_get_space(node);
+
+	isl_printer * print = isl_printer_to_file(ctx, stdin);
 
 	// get partial schedules and fuse them
 	isl_multi_union_pw_aff * mu = isl_schedule_node_band_get_partial_schedule(node);
 	isl_multi_union_pw_aff * pmu = isl_schedule_node_band_get_partial_schedule(parent);
 
-	//isl_union_pw_aff_list * mupw_list = isl_union_pw_aff_list_from_union_pw_aff(
-	//		mu);
-	//mupw_list = isl_multi_union_pw_aff_list_add(mupw_list, pmu);
-	//isl_multi_union_pw_aff * mupw_result = isl_multi_union_pw_aff_from_union_pw_aff_list(space, mupw_list);
+	isl_multi_union_pw_aff * fusion = isl_multi_union_pw_aff_range_product(mu, pmu);
+	wrap_isl_printer( ctx, (void *) fusion, MULTI_UNION_PW_AFF);
 
 
-	//isl_schedule_node * new_node = isl_schedule_insert_partial_schedule(parent, mupw_result);
+	isl_schedule_node * fused_node = isl_schedule_node_insert_partial_schedule(parent, fusion);
 
-	//isl_schedule_node * child = isl_schedule_node_delete(node);
-	return node;
+	isl_printer_free(print);
+	return fused_node;
 
 
 }
 
 
-isl_schedule_node * schedule_node_fuse_bands(isl_schedule_node * node, void * user)
-{
-	enum isl_schedule_node_type ntype = isl_schedule_node_get_type( node);
-	switch(ntype){
-	case isl_schedule_node_band:
-		return band_fuse(node);
-	default:
-		return node;
-	}
-}

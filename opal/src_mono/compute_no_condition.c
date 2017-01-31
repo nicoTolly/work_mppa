@@ -137,49 +137,6 @@ void compute(
 		for(unsigned int y = 0; y < Config->Ly; y++){
 			for(unsigned int x = 0; x < Config->Lx; x++){
 
-//#else
-					// Pull propagation
-					f[ 1] = Src[z  ][y  ][x-1][ 1]; /*src( 1, -e01);*/
-					f[ 2] = Src[z  ][y  ][x+1][ 2]; /*src( 2, -e02);*/
-					f[ 3] = Src[z  ][y-1][x  ][ 3]; /*src( 3, -e03);*/
-					f[ 4] = Src[z  ][y+1][x  ][ 4]; /*src( 4, -e04);*/
-					f[ 5] = Src[z-1][y  ][x  ][ 5]; /*src( 5, -e05);*/
-					f[ 6] = Src[z+1][y  ][x  ][ 6]; /*src( 6, -e06);*/
-					f[ 7] = Src[z  ][y-1][x-1][ 7]; /*src( 7, -e07);*/
-					f[ 8] = Src[z  ][y-1][x+1][ 8]; /*src( 8, -e08);*/
-					f[ 9] = Src[z  ][y+1][x-1][ 9]; /*src( 9, -e09);*/
-					f[10] = Src[z  ][y+1][x+1][10]; /*src(10, -e10);*/
-					f[11] = Src[z-1][y  ][x-1][11]; /*src(11, -e11);*/
-					f[12] = Src[z-1][y  ][x+1][12]; /*src(12, -e12);*/
-					f[13] = Src[z+1][y  ][x-1][13]; /*src(13, -e13);*/
-					f[14] = Src[z+1][y  ][x+1][14]; /*src(14, -e14);*/
-					f[15] = Src[z-1][y-1][x  ][15]; /*src(15, -e15);*/
-					f[16] = Src[z-1][y+1][x  ][16]; /*src(16, -e16);*/
-					f[17] = Src[z+1][y-1][x  ][17]; /*src(17, -e17);*/
-					f[18] = Src[z+1][y+1][x  ][18]; /*src(18, -e18);*/
-
-				// Computation of moments
-				t0 = f[ 1] + f[ 2] + f[ 3] + f[ 4] + f[ 5] + f[ 6];
-				t1 = f[ 7] + f[ 8] + f[ 9] + f[10] + f[11] + f[12] + f[13] + f[14]
-				  + f[15] + f[16] + f[17] + f[18];
-				rho = f[ 0] + t0 + t1;
-				e = -30*f[ 0] - 11*t0 + 8*t1; 
-				eps = 12*f[ 0] - 4*t0 + t1;
-				t0 = f[ 1] - f[ 2];
-				t1 = f[ 7] - f[ 8] + f[ 9] - f[10] + f[11] - f[12] + f[13] - f[14];
-				jx = t0 + t1;
-				qx = -4*t0 + t1;
-				t0 = f[ 3] - f[ 4];
-				t1 = f[ 7] + f[ 8] - f[ 9] - f[10] + f[15] - f[16] + f[17] - f[18];
-				jy = t0 + t1;
-				qy = -4*t0 + t1;
-				t0 = f[ 5] - f[ 6];
-				t1 = f[11] + f[12] - f[13] - f[14] + f[15] + f[16] - f[17] - f[18];
-				jz = t0 + t1;
-				qz = -4*t0 + t1;
-
-				// if (1) {
-
 					// Default case
 
 					t0 = 2*(f[ 1] + f[ 2]) - (f[ 3] + f[ 4] + f[ 5] + f[ 6]);
@@ -278,42 +235,6 @@ void compute(
 			// } 
 
 				// Monitoring: Do every 'Period' steps
-				if (step > 0 && (step % Config->Period == 0)) {
-
-					// Velocity components
-					float ux, uy, uz;
-
-					// Fetch stored velocity
-					ux = Velocity[z][y][x][0];
-					uy = Velocity[z][y][x][1];
-					uz = Velocity[z][y][x][2];
-
-					// Store current velocity
-					float vx = jx/(1 + rho);
-					float vy = jy/(1 + rho);
-					float vz = jz/(1 + rho);
-					Velocity[z][y][x][0] = vx;
-					Velocity[z][y][x][1] = vy;
-					Velocity[z][y][x][2] = vz;
-
-					// Compute and store squared velocity variation
-					Delta[z][y][x] = (ux-vx)*(ux-vx) + (uy-vy)*(uy-vy) + (uz-vz)*(uz-vz);
-					
-					// Write bitmap pixel
-					if (Results->Bitmap && y == (Config->Ly>>1)){
-						writePixel(Results, Config, x, z, 4*sqrt(vx*vx + vy*vy + vz*vz)/Config->U0);
-					}
-				}
-
-				// Extraction, do on the last step.
-				if (step == Config->Duration-1) {
-
-					// Store current density and velocity
-					Density[z][y][x] = 1 + rho;
-					Velocity[z][y][x][0] = jx/(1 + rho);
-					Velocity[z][y][x][1] = jy/(1 + rho);
-					Velocity[z][y][x][2] = jz/(1 + rho);
-				}
 			} // end for x
 		} // end for y
 	} // end for z

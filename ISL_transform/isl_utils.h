@@ -4,7 +4,7 @@
 
 #include "transform.h"
 
-typedef enum { VAL, BASIC_SET, SET, UNION_SET, SCHEDULE , SCHEDULE_NODE} isl_enum_type ;
+typedef enum { VAL, BASIC_SET, SET, UNION_SET, SCHEDULE , SCHEDULE_NODE, MULTI_UNION_PW_AFF} isl_enum_type ;
 
 void wrap_isl_printer(isl_ctx * ctx, void * var_to_print, isl_enum_type typ);
 
