@@ -33,7 +33,6 @@ int main(int argc, char ** argv)
 		for (int j =0; j < N; j++)
 {
 			b[i][j] = t[i][N - j - 1];
-bar(&i);
 }
 #pragma endscop
 	int v;

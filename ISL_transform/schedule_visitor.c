@@ -171,7 +171,7 @@ int schedule_visitor( __isl_keep isl_schedule * schedule, void * (*fn) (void *))
 	wrap_isl_printer(ctx,  (void * ) root, SCHEDULE_NODE);
 	int nband = count_band_nodes(root);
 	printf("number of band in original schedule :%d\n", nband);
-	//isl_schedule_node * fused_bands = isl_schedule_node_map_descendant_bottom_up(root, schedule_node_fuse_bands,  NULL );
+	isl_schedule_node * fused_bands = isl_schedule_node_map_descendant_bottom_up(root, schedule_node_fuse_bands,  NULL );
 	//wrap_isl_printer(ctx, (void * ) fused_bands, SCHEDULE_NODE);
 	//isl_schedule_node_foreach_descendant_top_down is NOT supposed to change the state of the schedule node
 	//It is better to use map_descendant_bottom_up which seems better suited
